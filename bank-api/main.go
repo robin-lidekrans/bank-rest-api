@@ -27,10 +27,22 @@ func listBanks(c *gin.Context) {
 	c.JSON(http.StatusOK, banks)
 }
 
+func getBankByKeyOrName(c *gin.Context) {
+	query := c.Param("query")
+	for _, x := range banks {
+		if (x.Key == query) || (x.Name == query) {
+			c.JSON(http.StatusOK, x)
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, nil)
+}
+
 func main() {
 	router := gin.Default()
 
 	router.GET("/list", listBanks)
+	router.GET("/list.:query", getBankByKeyOrName)
 
 	router.Run("localhost:8070")
 }
