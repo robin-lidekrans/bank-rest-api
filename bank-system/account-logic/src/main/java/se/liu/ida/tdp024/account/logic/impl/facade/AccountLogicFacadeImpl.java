@@ -21,6 +21,9 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
 
     @Override
     public String create(String accountType, String personKey, String bankKey) {
+        if (accountType == null || personKey == null || bankKey == null) {
+            return "FAILED";
+        }
         return accountEntityFacade.create(accountType, personKey, bankKey);
     }
 
