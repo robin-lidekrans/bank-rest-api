@@ -1,3 +1,5 @@
 bank-system/*/target
 **/.classpath
 **/.settings
+**/.idea
+**/*.log
