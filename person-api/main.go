@@ -37,8 +37,10 @@ func getPersonByKeyOrName(c *gin.Context) {
 func main() {
 	router := gin.Default()
 
-	router.GET("/list", listPersons)
-	router.GET("/list.:query", getPersonByKeyOrName)
+	endpoint := "/person"
+
+	router.GET(endpoint+"/list", listPersons)
+	router.GET(endpoint+"/list.:query", getPersonByKeyOrName)
 
 	router.Run("localhost:8060")
 }

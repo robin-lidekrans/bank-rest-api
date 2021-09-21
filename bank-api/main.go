@@ -41,8 +41,10 @@ func getBankByKeyOrName(c *gin.Context) {
 func main() {
 	router := gin.Default()
 
-	router.GET("/list", listBanks)
-	router.GET("/list.:query", getBankByKeyOrName)
+	endpoint := "/person"
+
+	router.GET(endpoint+"/list", listBanks)
+	router.GET(endpoint+"/list.:query", getBankByKeyOrName)
 
 	router.Run("localhost:8070")
 }
