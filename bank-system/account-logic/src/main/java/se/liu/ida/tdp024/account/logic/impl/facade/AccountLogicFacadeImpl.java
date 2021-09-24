@@ -5,10 +5,15 @@ import java.util.List;
 import se.liu.ida.tdp024.account.data.api.entity.Account;
 import se.liu.ida.tdp024.account.data.api.facade.AccountEntityFacade;
 import se.liu.ida.tdp024.account.logic.api.facade.AccountLogicFacade;
+import se.liu.ida.tdp024.account.util.http.HTTPHelper;
+import se.liu.ida.tdp024.account.util.http.HTTPHelperImpl;
 
 public class AccountLogicFacadeImpl implements AccountLogicFacade {
     
+    private static final HTTPHelper httpHelper = new HTTPHelperImpl();
     private AccountEntityFacade accountEntityFacade;
+    private String personApiEndpoint = "http://localhost:8060/person/";
+    private String bankApiEndpoint = "http://localhost:8070/bank/";
     
     public AccountLogicFacadeImpl(AccountEntityFacade accountEntityFacade) {
         this.accountEntityFacade = accountEntityFacade;
@@ -24,7 +29,14 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
         if (accountType == null || personKey == null || bankKey == null) {
             return "FAILED";
         }
+
+        // Check that the provided person and bank are valid
+        String personApiResp = httpHelper.get(personApiEndpoint + "find." + personKey);
+        String bankApiResp = httpHelper.get(bankApiEndpoint + "find." + bankKey);
+        if (personApiResp.equals("null") || bankApiResp.equals("null")) {
+            return "FAILED";
+        }
+        
         return accountEntityFacade.create(accountType, personKey, bankKey);
     }
-
 }
