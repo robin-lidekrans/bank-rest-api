@@ -37,5 +37,12 @@ public class AccountLogicFacadeTest {
       // Valid account, person, invalid bank
       res = accountLogicFacade.create("CHECK", "1", "DANSKEBANK");
       assert(res == "FAILED");
+
+      // Invalid account, valid person, bank
+      res = accountLogicFacade.create("CREDITCARD", "1", "NORDEA");
+      assert(res == "FAILED");
+
+      res = accountLogicFacade.create("", "", "");
+      assert(res == "FAILED");
     }
 }

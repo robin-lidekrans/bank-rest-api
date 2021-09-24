@@ -33,10 +33,16 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
         // Check that the provided person and bank are valid
         String personApiResp = httpHelper.get(personApiEndpoint + "find." + personKey);
         String bankApiResp = httpHelper.get(bankApiEndpoint + "find." + bankKey);
-        if (personApiResp.equals("null") || bankApiResp.equals("null")) {
+        boolean invalidApiResp = (personApiResp.equals("null") || bankApiResp.equals("null"));
+        
+
+        // Check that accountType is valid
+        boolean validAccountType = (accountType.equals("CHECK") || accountType.equals("SAVINGS"));
+
+        if (invalidApiResp || !validAccountType) {
             return "FAILED";
         }
-        
+
         return accountEntityFacade.create(accountType, personKey, bankKey);
     }
 }
