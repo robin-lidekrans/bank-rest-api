@@ -41,6 +41,9 @@ func main() {
 
 	router.GET(endpoint+"/list", listPersons)
 	router.GET(endpoint+"/find.:query", getPersonByKeyOrName)
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusOK, nil)
+	})
 
 	router.Run("localhost:8060")
 }
