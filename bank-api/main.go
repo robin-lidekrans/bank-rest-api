@@ -44,7 +44,7 @@ func main() {
 	endpoint := "/person"
 
 	router.GET(endpoint+"/list", listBanks)
-	router.GET(endpoint+"/list.:query", getBankByKeyOrName)
+	router.GET(endpoint+"/find.:query", getBankByKeyOrName)
 
 	router.Run("localhost:8070")
 }
