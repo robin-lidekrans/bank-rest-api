@@ -6,7 +6,6 @@ import se.liu.ida.tdp024.account.data.impl.db.entity.AccountDB;
 import se.liu.ida.tdp024.account.data.impl.db.util.EMF;
 
 import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
@@ -25,7 +24,8 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
             em.persist(account);
             em.getTransaction().commit();
             return "OK";
-        } catch (RollbackException e) {
+        } catch (Exception e) {
+            em.getTransaction().rollback();
             return "FAILED";
         } finally {
             em.close();
@@ -38,6 +38,7 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         try {
             TypedQuery<Account> query = em.createQuery(
                     "SELECT acc FROM AccountDB acc WHERE acc.personKey = :personKey", Account.class);
+            query.setParameter("personKey", personKey);
             return query.getResultList();
         } finally {
             em.close();
