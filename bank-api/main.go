@@ -35,7 +35,7 @@ func getBankByKeyOrName(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(http.StatusNotFound, nil)
+	c.JSON(http.StatusOK, nil)
 }
 
 func main() {
