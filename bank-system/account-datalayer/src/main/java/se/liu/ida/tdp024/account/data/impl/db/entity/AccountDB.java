@@ -36,4 +36,24 @@ public class AccountDB implements Account {
     public void setHoldings(int holding) {
         this.holdings = holding;
     }
+
+    @Override
+    public String getPersonKey() {
+        return this.personKey;
+    }
+
+    @Override
+    public String getAccountType() {
+        return this.accountType;
+    }
+
+    @Override
+    public String getBankKey() {
+        return this.bankKey;
+    }
+
+    @Override
+    public int getHoldings() {
+        return this.holdings;
+    }
 }

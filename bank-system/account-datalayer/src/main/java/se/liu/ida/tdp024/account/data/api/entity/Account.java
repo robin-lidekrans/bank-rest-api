@@ -11,4 +11,12 @@ public interface Account extends Serializable {
     public void setBankKey(String bankKey);
 
     public void setHoldings(int holding);
+
+    public String getPersonKey();
+
+    public String getAccountType();
+
+    public String getBankKey();
+
+    public int getHoldings();
 }
