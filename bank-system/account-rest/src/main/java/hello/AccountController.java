@@ -21,7 +21,7 @@ public class AccountController {
 
     @RequestMapping("/account-rest/account/find/person")
     public ResponseEntity<List<Account>> findPerson(@RequestParam(value="person") String person) {
-        List res = new ArrayList<Account>();
+        List<Account> res = new ArrayList<Account>();
         res = accountLogicFacade.findPerson(person);
         return new ResponseEntity<List<Account>>(res, HttpStatus.OK);
     }
@@ -30,7 +30,6 @@ public class AccountController {
     public ResponseEntity<String> create(@RequestParam(value="accounttype") String accountType,
                                          @RequestParam(value="person") String personKey,
                                          @RequestParam(value="bank") String bankKey) {
-        System.out.println("HEJ");
         String res = accountLogicFacade.create(accountType, personKey, bankKey);
         return new ResponseEntity<String>(res, HttpStatus.OK);
     }
