@@ -10,7 +10,7 @@ import se.liu.ida.tdp024.account.data.api.entity.Account;
 @Entity
 public class AccountDB implements Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private long id;
     private String personKey;
     private String accountType;
