@@ -20,8 +20,8 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
     }
 
     @Override
-    public List<Account> findPerson(String person) {
-        return accountEntityFacade.get(person);
+    public List<Account> findPerson(String personKey) {
+        return accountEntityFacade.get(personKey);
     }
 
     @Override
@@ -44,5 +44,23 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
         }
 
         return accountEntityFacade.create(accountType, personKey, bankKey);
+    }
+
+    @Override
+    public String debitAccount(Long accountID, int amount) {
+        Account account = accountEntityFacade.getAccount(accountID);
+        if (account == null) {
+            return "FAILED";
+        }
+        return accountEntityFacade.debitAccount(accountID, amount);
+    }
+
+    @Override
+    public String creditAccount(Long accountID, int amount) {
+        Account account = accountEntityFacade.getAccount(accountID);
+        if (account == null) {
+            return "FAILED";
+        }
+        return accountEntityFacade.creditAccount(accountID, amount);
     }
 }

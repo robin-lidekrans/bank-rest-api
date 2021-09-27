@@ -7,9 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.liu.ida.tdp024.account.data.api.entity.Account;
+import se.liu.ida.tdp024.account.data.api.entity.Transaction;
+import se.liu.ida.tdp024.account.data.api.facade.AccountEntityFacade;
+import se.liu.ida.tdp024.account.data.api.facade.TransactionEntityFacade;
 import se.liu.ida.tdp024.account.data.impl.db.facade.AccountEntityFacadeDB;
+import se.liu.ida.tdp024.account.data.impl.db.facade.TransactionEntityFacadeDB;
 import se.liu.ida.tdp024.account.logic.api.facade.AccountLogicFacade;
+import se.liu.ida.tdp024.account.logic.api.facade.TransactionLogicFacade;
 import se.liu.ida.tdp024.account.logic.impl.facade.AccountLogicFacadeImpl;
+import se.liu.ida.tdp024.account.logic.impl.facade.TransactionLogicFacadeImpl;
 import se.liu.ida.tdp024.account.util.json.AccountJsonSerializer;
 import se.liu.ida.tdp024.account.util.json.AccountJsonSerializerImpl;
 
@@ -19,8 +25,10 @@ import java.util.List;
 @RestController
 @RequestMapping("account-rest/account")
 public class AccountController {
-
-    private final AccountLogicFacade accountLogicFacade = new AccountLogicFacadeImpl(new AccountEntityFacadeDB());
+    private final TransactionEntityFacade transactionEntityFacade = new TransactionEntityFacadeDB();
+    private final AccountEntityFacade accountEntityFacade = new AccountEntityFacadeDB(transactionEntityFacade);
+    private final AccountLogicFacade accountLogicFacade = new AccountLogicFacadeImpl(accountEntityFacade);
+    private final TransactionLogicFacade transactionLogicFacade = new TransactionLogicFacadeImpl(transactionEntityFacade);
     private final AccountJsonSerializer accountJsonSerializer= new AccountJsonSerializerImpl();
 
     @RequestMapping("/find/person")
@@ -41,16 +49,20 @@ public class AccountController {
 
     @RequestMapping("debit")
     public ResponseEntity<String> debit(@RequestParam(value = "id") long id, @RequestParam(value = "amount") int amount) {
-        return null;
+        String res = accountLogicFacade.debitAccount(id, amount);
+        return new ResponseEntity<String>(res, HttpStatus.OK);
     }
 
     @RequestMapping("credit")
     public ResponseEntity<String> credit(@RequestParam(value = "id") long id, @RequestParam(value = "amount") int amount) {
-        return null;
+        String res = accountLogicFacade.creditAccount(id, amount);
+        return new ResponseEntity<String>(res, HttpStatus.OK);
     }
 
     @RequestMapping("transactions")
     public ResponseEntity<String> getTransactions(@RequestParam(value = "id") long id) {
-        return null;
+        List<Transaction> res = new ArrayList<Transaction>();
+        res = transactionLogicFacade.getTransactions(id);
+        return new ResponseEntity<String>(accountJsonSerializer.toJson(res), HttpStatus.OK);
     }
 }

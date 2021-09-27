@@ -4,3 +4,4 @@ bank-system/*/target
 **/.idea
 **/*.log
 **/.vscode
+bank-system/todo

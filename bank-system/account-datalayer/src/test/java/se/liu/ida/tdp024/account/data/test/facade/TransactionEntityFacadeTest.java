@@ -19,7 +19,7 @@ public class TransactionEntityFacadeTest {
         
     //---- Unit under test ----//
     private TransactionEntityFacade transactionEntityFacade = new TransactionEntityFacadeDB();
-    private AccountEntityFacade accountEntityFacade = new AccountEntityFacadeDB();
+    private AccountEntityFacade accountEntityFacade = new AccountEntityFacadeDB(transactionEntityFacade);
     private StorageFacade storageFacade = new StorageFacadeDB();
 
     // Account 1
