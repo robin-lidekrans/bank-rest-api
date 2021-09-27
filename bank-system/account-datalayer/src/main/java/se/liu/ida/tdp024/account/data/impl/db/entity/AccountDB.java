@@ -2,7 +2,6 @@ package se.liu.ida.tdp024.account.data.impl.db.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import se.liu.ida.tdp024.account.data.api.entity.Account;
@@ -55,5 +54,10 @@ public class AccountDB implements Account {
     @Override
     public int getHoldings() {
         return this.holdings;
+    }
+
+    @Override
+    public long getId() {
+        return this.id;
     }
 }

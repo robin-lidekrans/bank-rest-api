@@ -19,4 +19,6 @@ public interface Account extends Serializable {
     public String getBankKey();
 
     public int getHoldings();
+
+    public long getId();
 }
