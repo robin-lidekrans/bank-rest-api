@@ -3,6 +3,7 @@ package se.liu.ida.tdp024.account.data.test.facade;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import se.liu.ida.tdp024.account.data.api.entity.Account;
@@ -25,6 +26,13 @@ public class AccountEntityFacadeTest {
     String personKey = "5";
     String bankKey = "1";
     int holdings = 999;
+
+    @Before
+    public void setup() {
+        transactionEntityFacade = new TransactionEntityFacadeDB();
+        accountEntityFacade = new AccountEntityFacadeDB(transactionEntityFacade);
+        storageFacade = new StorageFacadeDB();
+    }
 
     @After
     public void tearDown() {
@@ -53,11 +61,14 @@ public class AccountEntityFacadeTest {
 
         accountEntityFacade.create(accountType + 2, personKey + 1, bankKey + 2);
         assert(res.size() == 3);
+
+        assert(accountEntityFacade.get(personKey).get(0).getId() == res.get(0).getId());
     }
 
     @Test
     public void testSettersAndGetters() {
         AccountDB acc = new AccountDB();
+        long accID = acc.getId();
         assert(acc.getAccountType() == null);
         assert(acc.getBankKey() == null);
         assert(acc.getPersonKey() == null);
@@ -71,5 +82,30 @@ public class AccountEntityFacadeTest {
         assert(acc.getBankKey().equals(bankKey));
         assert(acc.getPersonKey().equals(personKey));
         assert(acc.getHoldings() == holdings);
+        assert(accID == acc.getId());
+    }
+
+    @Test
+    public void testCreditDebitAccount() {
+        accountEntityFacade.create(accountType, personKey, bankKey);
+        long accID = accountEntityFacade.get(personKey).get(0).getId();
+
+        String res = accountEntityFacade.debitAccount(accID, 50);
+        assert(res == "FAILED");
+        assert(accountEntityFacade.getAccount(accID).getHoldings() == 0);
+
+        res = accountEntityFacade.creditAccount(accID, 50);
+        assert(res == "OK");
+        assert(accountEntityFacade.getAccount(accID).getHoldings() == 50);
+
+        res = accountEntityFacade.debitAccount(accID, 25);
+        assert(res == "OK");
+        assert(accountEntityFacade.getAccount(accID).getHoldings() == 25);
+
+        res = accountEntityFacade.debitAccount(accID + 1, 25);
+        assert(res == "FAILED");
+
+        res = accountEntityFacade.creditAccount(accID + 1, 25);
+        assert(res == "FAILED");
     }
 }
