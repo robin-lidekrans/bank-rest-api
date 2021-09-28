@@ -35,20 +35,16 @@ public class AccountController {
     private final AccountJsonSerializer accountJsonSerializer = new AccountJsonSerializerImpl();
     private final KafkaUtil kafkaUtil = new KafkaUtilImpl();
 
-    private final String FIND_REQUEST = "Received /find/person request";
-    private final String FIND_SUCCESS = "Account search successful. Returning found accounts";
-
-    private final String CREATE_REQUEST = "Received /create request";
-    private final String CREATE_SUCCESS = "Account creation successful";
-
-    private final String DEBIT_REQUEST = "Received /debit request";
-    private final String DEBIT_SUCCESS = "Debit transaction successful";
-
-    private final String CREDIT_REQUEST = "Recieved /credit request";
-    private final String CREDIT_SUCCESS = "Credit transaction successful";
-
-    private final String TRANSACTION_REQUEST = "Received /transaction request";
-    private final String TRANSACTION_SUCCESS = "Transaction search successful. Returning found transactions";
+    private final static String FIND_REQUEST = "Received /find/person request";
+    private final static String FIND_SUCCESS = "Account search successful. Returning found accounts";
+    private final static String CREATE_REQUEST = "Received /create request";
+    private final static String CREATE_SUCCESS = "Account creation successful";
+    private final static String DEBIT_REQUEST = "Received /debit request";
+    private final static String DEBIT_SUCCESS = "Debit transaction successful";
+    private final static String CREDIT_REQUEST = "Recieved /credit request";
+    private final static String CREDIT_SUCCESS = "Credit transaction successful";
+    private final static String TRANSACTION_REQUEST = "Received /transaction request";
+    private final static String TRANSACTION_SUCCESS = "Transaction search successful. Returning found transactions";
 
     @RequestMapping("/find/person")
     public ResponseEntity<String> findPerson(@RequestParam(value="person") String person) {
