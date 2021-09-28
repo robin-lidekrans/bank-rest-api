@@ -119,8 +119,10 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         String timeStamp = LocalDateTime.now().toString();
         // Find returns null if no account was found
         if (account == null) {
-            em.getTransaction().commit();
+            em.getTransaction().rollback();
+            em.close();
             kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR_INVALID_ACCOUNT);
+
             return "FAILED";
         }
 
@@ -159,6 +161,7 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         String timeStamp = LocalDateTime.now().toString();
         // Find returns null if no account was found
         if (account == null) {
+            em.getTransaction().rollback();
             em.close();
             kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_ERROR_INVALID_ACCOUNT);
             return "FAILED";
