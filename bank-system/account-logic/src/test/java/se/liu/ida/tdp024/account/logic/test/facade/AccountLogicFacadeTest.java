@@ -53,16 +53,23 @@ public class AccountLogicFacadeTest {
         
         res = accountLogicFacade.create("", "", "");
         assert(res == "FAILED");
+
+        res = accountLogicFacade.create(null, null, null);
+        assert(res == "FAILED");
     }
 
     @Test
     public void testCredit() {
         accountLogicFacade.create("CHECK", "2", "3");
         long accountID = accountLogicFacade.findPerson("2").get(0).getId();
+
         accountLogicFacade.creditAccount(accountID, 200);
         assert(accountEntityFacade.getAccount(accountID).getHoldings() == 200);
+
         accountLogicFacade.creditAccount(accountID, 300);
         assert(accountEntityFacade.getAccount(accountID).getHoldings() == 500);
+
+        assert(accountLogicFacade.debitAccount((long) 999, 1000000).equals("FAILED"));
     }
     
     @Test
@@ -79,5 +86,7 @@ public class AccountLogicFacadeTest {
         res = accountLogicFacade.debitAccount(accountID, 999);
         assert(accountEntityFacade.getAccount(accountID).getHoldings() == 100);
         assert(res.equals("FAILED"));
+
+        assert(accountLogicFacade.creditAccount((long) 999, 1000000).equals("FAILED"));
     }
 }
