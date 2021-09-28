@@ -61,6 +61,8 @@ public class AccountLogicFacadeTest {
         long accountID = accountLogicFacade.findPerson("2").get(0).getId();
         accountLogicFacade.creditAccount(accountID, 200);
         assert(accountEntityFacade.getAccount(accountID).getHoldings() == 200);
+        accountLogicFacade.creditAccount(accountID, 300);
+        assert(accountEntityFacade.getAccount(accountID).getHoldings() == 500);
     }
     
     @Test
