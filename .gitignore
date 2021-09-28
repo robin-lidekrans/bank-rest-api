@@ -5,4 +5,4 @@ bank-system/*/target
 **/*.log
 **/.vscode
 bank-system/todo
-**/kafka-*
+kafka_*
