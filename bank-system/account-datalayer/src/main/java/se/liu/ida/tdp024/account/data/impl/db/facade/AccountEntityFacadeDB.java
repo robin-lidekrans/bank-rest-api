@@ -75,35 +75,33 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         EntityManager em = EMF.getEntityManager();
         String status;
 
-        try {
-            em.getTransaction().begin();
-            Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
-            String timeStamp = LocalDateTime.now().toString();
-            // Find returns null if no account was found
-            if (account == null) {
-                em.getTransaction().commit();
-                return "FAILED";
-            }
-
-            int newBalance = account.getHoldings() - amount;
-            if (newBalance < 0)  {
-                status = "FAILED";
-            } 
-            else {
-                status = "OK";
-                account.setHoldings(newBalance);
-            }
-            transactionEntityFacade.create("DEBIT", amount, timeStamp, status, account);
+        em.getTransaction().begin();
+        Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
+        String timeStamp = LocalDateTime.now().toString();
+        // Find returns null if no account was found
+        if (account == null) {
             em.getTransaction().commit();
-            return status;
-        } 
-        catch (Exception e) {
-            em.getTransaction().rollback();
             return "FAILED";
-        } 
-        finally {
-            em.close();
         }
+
+        int newBalance = account.getHoldings() - amount;
+        if (newBalance < 0)  {
+            status = "FAILED";
+        } 
+        else {
+            status = "OK";
+            account.setHoldings(newBalance);
+        }
+        try {
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            em.close();
+            return "FAILED";
+        }
+        em.close();
+        transactionEntityFacade.create("DEBIT", amount, timeStamp, status, account);
+        return status;
     }
 
     @Override
@@ -111,28 +109,26 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         EntityManager em = EMF.getEntityManager();
         String status;
 
+        em.getTransaction().begin();
+        Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
+        String timeStamp = LocalDateTime.now().toString();
+        // Find returns null if no account was found
+        if (account == null) {
+            em.close();
+            return "FAILED";
+        }
+        int newBalance = account.getHoldings() + amount;
+        account.setHoldings(newBalance);
+        status = "OK";
         try {
-            em.getTransaction().begin();
-            Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
-            String timeStamp = LocalDateTime.now().toString();
-            // Find returns null if no account was found
-            if (account == null) {
-                em.getTransaction().commit();
-                return "FAILED";
-            }
-            int newBalance = account.getHoldings() + amount;
-            account.setHoldings(newBalance);
-            status = "OK";
-            transactionEntityFacade.create("CREDIT", amount, timeStamp, status, account);
             em.getTransaction().commit();
-            return "OK";
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             em.getTransaction().rollback();
+            em.close();
             return "FAILED";
         } 
-        finally {
-            em.close();
-        }
+        em.close();
+        transactionEntityFacade.create("CREDIT", amount, timeStamp, status, account);
+        return status;
     }
 }
