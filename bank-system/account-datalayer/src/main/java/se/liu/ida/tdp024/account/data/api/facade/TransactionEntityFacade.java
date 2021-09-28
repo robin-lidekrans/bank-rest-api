@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TransactionEntityFacade {
 
-    public String create(String transactionType, int transactionAmount, String timeStamp, String status, Account account);
+    public String create(String type, int amount, String created, String status, Account account);
 
     public List<Transaction> get(Long accountId);
 

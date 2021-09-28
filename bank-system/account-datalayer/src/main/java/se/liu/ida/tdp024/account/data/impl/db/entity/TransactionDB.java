@@ -16,9 +16,9 @@ public class TransactionDB implements Transaction {
     @GeneratedValue()
     private long id;
 
-    private String transactionType;
-    private int transactionAmount;
-    private String timeStamp;
+    private String type;
+    private int amount;
+    private String created;
     private String status;
 
     @ManyToOne(targetEntity = AccountDB.class)
@@ -26,18 +26,18 @@ public class TransactionDB implements Transaction {
 
     // =========== Setters ===========
     @Override
-    public void setTransactionType(String type) {
-        this.transactionType = type;
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
     public void setAmount(int amount) {
-        this.transactionAmount = amount;
+        this.amount = amount;
     }
 
     @Override
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setCreated(String timeStamp) {
+        this.created = timeStamp;
     }
 
     @Override
@@ -52,18 +52,18 @@ public class TransactionDB implements Transaction {
 
     // =========== Getters ===========
     @Override
-    public String getTransactionType() {
-        return this.transactionType;
+    public String getType() {
+        return this.type;
     }
 
     @Override
     public int getAmount() {
-        return this.transactionAmount;
+        return this.amount;
     }
 
     @Override
-    public String getTimeStamp() {
-        return this.timeStamp;
+    public String getCreated() {
+        return this.created;
     }
 
     @Override

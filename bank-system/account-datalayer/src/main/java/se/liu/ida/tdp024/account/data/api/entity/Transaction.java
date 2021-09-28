@@ -5,22 +5,22 @@ import java.io.Serializable;
 public interface Transaction extends Serializable {
 
     // Setters
-    public void setTransactionType(String type);
+    public void setType(String type);
 
     public void setAmount(int amount);
 
-    public void setTimeStamp(String timeStamp);
+    public void setCreated(String timeStamp);
 
     public void setStatus(String status);
 
     public void setAccount(Account account);
 
     // Getters
-    public String getTransactionType();
+    public String getType();
 
     public int getAmount();
 
-    public String getTimeStamp();
+    public String getCreated();
 
     public String getStatus();
 

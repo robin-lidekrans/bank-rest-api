@@ -69,8 +69,8 @@ public class TransactionEntityFacadeTest {
         assert(res.get(0).getAccount() == res.get(1).getAccount());
         assert(res.get(0).getAmount() == res.get(1).getAmount());
         assert(res.get(0).getStatus().equals(res.get(1).getStatus()));
-        assert(res.get(0).getTimeStamp().equals(res.get(1).getTimeStamp()));
-        assert(res.get(0).getTransactionType().equals(res.get(1).getTransactionType()));
+        assert(res.get(0).getCreated().equals(res.get(1).getCreated()));
+        assert(res.get(0).getType().equals(res.get(1).getType()));
 
         res = transactionEntityFacade.get(acc2.getId());
         assert(res.size() == 1);

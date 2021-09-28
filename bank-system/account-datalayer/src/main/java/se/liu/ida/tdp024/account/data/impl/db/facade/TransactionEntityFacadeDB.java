@@ -14,14 +14,14 @@ import se.liu.ida.tdp024.account.data.impl.db.util.EMF;
 public class TransactionEntityFacadeDB implements TransactionEntityFacade {
 
     @Override
-    public String create(String transactionType, int transactionAmount, String timeStamp, String status, Account account) {
+    public String create(String type, int amount, String created, String status, Account account) {
         EntityManager em = EMF.getEntityManager();
         try {
             em.getTransaction().begin();
             Transaction transaction = new TransactionDB();
-            transaction.setTransactionType(transactionType);
-            transaction.setAmount(transactionAmount);
-            transaction.setTimeStamp(timeStamp);
+            transaction.setType(type);
+            transaction.setAmount(amount);
+            transaction.setCreated(created);
             transaction.setStatus(status);
             transaction.setAccount(account);
             em.persist(transaction);
