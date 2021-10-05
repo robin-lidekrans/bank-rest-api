@@ -181,7 +181,7 @@ public class TransactionTest {
 
         String accountJson = httpHelper.get(FinalConstants.ENDPOINT + "account/find/person", "person", "4");
         AccountDTO[] accountDTos = jsonSerializer.fromJson(accountJson, AccountDTO[].class);
-        final AccountDTO accountDTO = accountDTos[0];
+        final AccountDTO accountDTO = accountDTos[accountDTos.length - 1];
 
 
         
@@ -218,7 +218,7 @@ public class TransactionTest {
         //Now check the balance of the account
         {
             String checkJson = httpHelper.get(FinalConstants.ENDPOINT + "account/find/person", "person", "4");
-            AccountDTO refreshedAccountDTO = jsonSerializer.fromJson(checkJson, AccountDTO[].class)[0];
+            AccountDTO refreshedAccountDTO = jsonSerializer.fromJson(checkJson, AccountDTO[].class)[accountDTos.length - 1];
             Assert.assertEquals(size * amount, refreshedAccountDTO.getHoldings());
         }
         
