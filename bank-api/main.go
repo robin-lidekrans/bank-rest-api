@@ -36,6 +36,7 @@ func writeKafka(msg string) {
 	w := &kafka.Writer{
 		Addr: kafka.TCP(kafkaBrokerAddress),
 		Topic: topic,
+		Async: true,
 	}
 
 	err := w.WriteMessages(context.TODO(),
