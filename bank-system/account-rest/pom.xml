@@ -32,6 +32,11 @@
           <artifactId>logic</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>tdp024</groupId>
+            <artifactId>xfinal-test</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <properties>
