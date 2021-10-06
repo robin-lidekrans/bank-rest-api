@@ -58,14 +58,14 @@ public class AccountControllerTest {
     public void testFind() {
         ResponseEntity<String> res = accountController.findPerson("2");
         assertEmptyList(res);
-        accountController.create("CHECK", "2", "NORDEA");
+        accountController.create("CHECK", "Xena", "NORDEA");
         res = accountController.findPerson("2");
         List<LinkedHashMap<String, String>> accountList = jsonSerializer.fromJson(res.getBody(), List.class);
         assert(accountList.size() == 1);
         LinkedHashMap<String, String> acc = accountList.get(0);
         assert(acc.get("accountType").equals("CHECK"));
         assert(acc.get("personKey").equals("2"));
-        assert(acc.get("bankKey").equals("NORDEA"));
+        assert(acc.get("bankKey").equals("4"));
     }
 
     @Test

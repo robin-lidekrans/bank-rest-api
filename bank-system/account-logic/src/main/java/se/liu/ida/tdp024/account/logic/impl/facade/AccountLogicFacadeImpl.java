@@ -1,5 +1,6 @@
 package se.liu.ida.tdp024.account.logic.impl.facade;
 
+import java.util.HashMap;
 import java.util.List;
 
 import se.liu.ida.tdp024.account.data.api.entity.Account;
@@ -7,11 +8,14 @@ import se.liu.ida.tdp024.account.data.api.facade.AccountEntityFacade;
 import se.liu.ida.tdp024.account.logic.api.facade.AccountLogicFacade;
 import se.liu.ida.tdp024.account.util.http.HTTPHelper;
 import se.liu.ida.tdp024.account.util.http.HTTPHelperImpl;
+import se.liu.ida.tdp024.account.util.json.AccountJsonSerializer;
+import se.liu.ida.tdp024.account.util.json.AccountJsonSerializerImpl;
 
 public class AccountLogicFacadeImpl implements AccountLogicFacade {
     
     private static final HTTPHelper httpHelper = new HTTPHelperImpl();
     private AccountEntityFacade accountEntityFacade;
+    private AccountJsonSerializer jsonSerializer = new AccountJsonSerializerImpl();
     private String personApiEndpoint = "http://localhost:8060/person/";
     private String bankApiEndpoint = "http://localhost:8070/bank/";
     
@@ -25,6 +29,7 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String create(String accountType, String personKey, String bankKey) {
         if (accountType == null || personKey == null || bankKey == null) {
             return "FAILED";
@@ -43,7 +48,12 @@ public class AccountLogicFacadeImpl implements AccountLogicFacade {
             return "FAILED";
         }
 
-        return accountEntityFacade.create(accountType, personKey, bankKey);
+        HashMap<String, String> personApiRespMap = jsonSerializer.fromJson(personApiResp, HashMap.class);
+        HashMap<String, String> bankApiRespMap = jsonSerializer.fromJson(bankApiResp, HashMap.class);
+        String fetchedPersonKey = personApiRespMap.get("Key");
+        String fetchedBankKey = bankApiRespMap.get("Key");
+
+        return accountEntityFacade.create(accountType, fetchedPersonKey, fetchedBankKey);
     }
 
     @Override
