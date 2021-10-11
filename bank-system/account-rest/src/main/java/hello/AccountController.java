@@ -15,13 +15,10 @@ import se.liu.ida.tdp024.account.logic.api.facade.AccountLogicFacade;
 import se.liu.ida.tdp024.account.logic.api.facade.TransactionLogicFacade;
 import se.liu.ida.tdp024.account.logic.impl.facade.AccountLogicFacadeImpl;
 import se.liu.ida.tdp024.account.logic.impl.facade.TransactionLogicFacadeImpl;
-import se.liu.ida.tdp024.account.util.json.AccountJsonSerializer;
-import se.liu.ida.tdp024.account.util.json.AccountJsonSerializerImpl;
 import se.liu.ida.tdp024.account.util.kafka.KafkaTopic;
 import se.liu.ida.tdp024.account.util.kafka.KafkaUtil;
 import se.liu.ida.tdp024.account.util.kafka.KafkaUtilImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,7 +28,6 @@ public class AccountController {
     private final AccountEntityFacade accountEntityFacade = new AccountEntityFacadeDB(transactionEntityFacade);
     private final AccountLogicFacade accountLogicFacade = new AccountLogicFacadeImpl(accountEntityFacade);
     private final TransactionLogicFacade transactionLogicFacade = new TransactionLogicFacadeImpl(transactionEntityFacade);
-    private final AccountJsonSerializer accountJsonSerializer = new AccountJsonSerializerImpl();
     private final KafkaUtil kafkaUtil = new KafkaUtilImpl();
 
     private final static String FIND_REQUEST = "Received /find/person request";
@@ -46,12 +42,11 @@ public class AccountController {
     private final static String TRANSACTION_SUCCESS = "Transaction search successful. Returning found transactions";
 
     @RequestMapping("/find/person")
-    public ResponseEntity<String> findPerson(@RequestParam(value="person") String person) {
+    public ResponseEntity<List<Account>> findPerson(@RequestParam(value="person") String person) {
         kafkaUtil.publishMessage(KafkaTopic.REST, FIND_REQUEST);
-        List<Account> res = new ArrayList<Account>();
-        res = accountLogicFacade.findPerson(person);
+        List<Account> res = accountLogicFacade.findPerson(person);
         kafkaUtil.publishMessage(KafkaTopic.REST, FIND_SUCCESS);
-        return new ResponseEntity<String>(accountJsonSerializer.toJson(res), HttpStatus.OK);
+        return new ResponseEntity<List<Account>>(res, HttpStatus.OK);
     }
 
     @RequestMapping("/create")
@@ -82,11 +77,10 @@ public class AccountController {
     }
 
     @RequestMapping("/transactions")
-    public ResponseEntity<String> getTransactions(@RequestParam(value = "id") long id) {
+    public ResponseEntity<List<Transaction>> getTransactions(@RequestParam(value = "id") long id) {
         kafkaUtil.publishMessage(KafkaTopic.REST, TRANSACTION_REQUEST);
-        List<Transaction> res = new ArrayList<Transaction>();
-        res = transactionLogicFacade.getTransactions(id);
+        List<Transaction> res = transactionLogicFacade.getTransactions(id);
         kafkaUtil.publishMessage(KafkaTopic.REST, TRANSACTION_SUCCESS);
-        return new ResponseEntity<String>(accountJsonSerializer.toJson(res), HttpStatus.OK);
+        return new ResponseEntity<List<Transaction>>(res, HttpStatus.OK);
     }
 }
