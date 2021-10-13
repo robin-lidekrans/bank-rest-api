@@ -35,13 +35,11 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
     private final static String CREDIT_INIT = "Attempting to credit account.";
     private final static String CREDIT_SUCCESS = "Crediting account successful.";
     private final static String CREDIT_ERROR = "Error crediting account.";
-    private final static String CREDIT_ERROR_INVALID_ACCOUNT = "Error crediting account: Invalid account";
 
     private final static String DEBIT_INIT = "Attempting to debit account.";
     private final static String DEBIT_SUCCESS = "Debiting account successful.";
     private final static String DEBIT_TRANSACTION_SUCCESS = "Account debit transaction completed.";
     private final static String DEBIT_ERROR = "Error debititing account.";
-    private final static String DEBIT_ERROR_INVALID_ACCOUNT = "Error debiting account: Invalid account.";
     private final static String DEBIT_ERROR_INSUFFICIENT_FUNDS = "Error debiting account: Insufficient funds.";
     
     public AccountEntityFacadeDB(TransactionEntityFacade transactionEntityFacade) {
@@ -113,40 +111,35 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_INIT);
         EntityManager em = EMF.getEntityManager();
         String status;
-
-        em.getTransaction().begin();
-        Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
         String timeStamp = LocalDateTime.now().toString();
-        // Find returns null if no account was found
-        if (account == null) {
-            em.getTransaction().rollback();
-            em.close();
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR_INVALID_ACCOUNT);
 
-            return "FAILED";
-        }
-
-        int newBalance = account.getHoldings() - amount;
-        if (newBalance < 0)  {
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR_INSUFFICIENT_FUNDS);
+        try {
+            em.getTransaction().begin();
+            Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
+            int newBalance = account.getHoldings() - amount;
+            if (newBalance < 0)  {
+                kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR_INSUFFICIENT_FUNDS);
+                status = "FAILED";
+            } 
+            else {
+                status = "OK";
+                account.setHoldings(newBalance);
+                kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_SUCCESS);
+            }
+            em.getTransaction().commit();
+            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_TRANSACTION_SUCCESS);
+            transactionEntityFacade.create("DEBIT", amount, timeStamp, status, account);
+        } 
+        catch (Exception e) {
+            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR);
             status = "FAILED";
         } 
-        else {
-            status = "OK";
-            account.setHoldings(newBalance);
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_SUCCESS);
-        }
-        try {
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             em.close();
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_ERROR);
-            return "FAILED";
         }
-        em.close();
-        kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, DEBIT_TRANSACTION_SUCCESS);
-        transactionEntityFacade.create("DEBIT", amount, timeStamp, status, account);
         return status;
     }
 
@@ -155,31 +148,28 @@ public class AccountEntityFacadeDB implements AccountEntityFacade {
         kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_INIT);
         EntityManager em = EMF.getEntityManager();
         String status;
-
-        em.getTransaction().begin();
-        Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
         String timeStamp = LocalDateTime.now().toString();
-        // Find returns null if no account was found
-        if (account == null) {
-            em.getTransaction().rollback();
-            em.close();
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_ERROR_INVALID_ACCOUNT);
-            return "FAILED";
-        }
-        int newBalance = account.getHoldings() + amount;
-        account.setHoldings(newBalance);
-        status = "OK";
+
         try {
+            em.getTransaction().begin();
+            Account account = em.find(AccountDB.class, accountID, LockModeType.PESSIMISTIC_WRITE);
+            int newBalance = account.getHoldings() + amount;
+            account.setHoldings(newBalance);
+            status = "OK";
             em.getTransaction().commit();
-        } catch (Exception e) {
-            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_ERROR);
-            em.getTransaction().rollback();
-            em.close();
-            return "FAILED";
+            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_SUCCESS);
+            transactionEntityFacade.create("CREDIT", amount, timeStamp, status, account);
         } 
-        em.close();
-        kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_SUCCESS);
-        transactionEntityFacade.create("CREDIT", amount, timeStamp, status, account);
+        catch (Exception e) {
+            kafkaUtil.publishMessage(KafkaTopic.TRANSACTION, CREDIT_ERROR);
+            status = "FAILED";
+        }
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
         return status;
     }
 }
