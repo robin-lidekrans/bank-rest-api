@@ -60,6 +60,7 @@ public class AccountEntityFacadeTest {
         assert(res.size() == 3);
 
         accountEntityFacade.create(accountType + 2, personKey + 1, bankKey + 2);
+        res = accountEntityFacade.get(personKey);
         assert(res.size() == 3);
 
         assert(accountEntityFacade.get(personKey).get(0).getId() == res.get(0).getId());
